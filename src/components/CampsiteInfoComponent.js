@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Card, CardImg, CardText, CardBody, Breadcrumb, BreadcrumbItem, Button, Modal, ModalBody, FormGroup, Label } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { Control, LocalForm, Errors} from 'react-redux-form';
+import { Loading } from './LoadingComponent';
 import ModalHeader from "reactstrap/lib/ModalHeader";
 
 const required = val => val && val.length;
@@ -30,7 +31,7 @@ class CommentForm extends Component {
 
     handleSubmit(values) {
         this.toggleModal();
-        this.props.addComment(this.props.campsiteId, values.rating, values.author, values.text);
+        this.props.addComment(this.props.campsiteId, values.rating, values.author, values.comment);
     }
 
 
@@ -85,7 +86,7 @@ class CommentForm extends Component {
                             </FormGroup>
                             <FormGroup className="form-group-row">
                                 <div className="form-group">
-                                <Label htmlFor="text" >Comment</Label>
+                                <Label htmlFor="comment" >Comment</Label>
                                     <Control.textarea model=".comment" id="comment" name="comment" rows="12" className="form-control" />
                                 </div>
                             </FormGroup>
@@ -132,21 +133,41 @@ function RenderComments({comments, addComment, campsiteId}) {
 
 
     function CampsiteInfo(props) {
+        if (props.isLoading) {
+            return (
+                <div className="container">
+                    <div className="row">
+                        <Loading />
+                    </div>
+                </div>
+            );
+        }
+        if (props.errMess) {
+            return (
+                <div className="container">
+                    <div className="row">
+                        <div className="col">
+                            <h4>{props.errMess}</h4>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
         if (props.campsite) {
             return (
                 <div className="container">
-                <div className="row">
-                    <div className="col">
-                    <Breadcrumb>
-                            <BreadcrumbItem>
-                                <Link to="/directory">Directory</Link>
-                            </BreadcrumbItem>
-                            <BreadcrumbItem active>{props.campsite.name}</BreadcrumbItem>
-                        </Breadcrumb>
-                        <h2>{props.campsite.name}</h2>
-                        <hr />
+                    <div className="row">
+                        <div className="col">
+                            <Breadcrumb>
+                                <BreadcrumbItem>
+                                    <Link to="/directory">Directory</Link>
+                                </BreadcrumbItem>
+                                <BreadcrumbItem active>{props.campsite.name}</BreadcrumbItem>
+                            </Breadcrumb>
+                            <h2>{props.campsite.name}</h2>
+                            <hr />
+                        </div>
                     </div>
-                </div>
                     <div className="row">
                         <RenderCampsite campsite={props.campsite} />
                         <RenderComments 
